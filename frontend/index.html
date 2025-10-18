@@ -4,42 +4,72 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Scene Burst Describer (BYO Gemini Key)</title>
-    <style>
-      :root { color-scheme: dark light; }
-      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 24px; }
-      .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-      .stack { display: grid; gap: 16px; max-width: 720px; }
-      .label { font-weight: 600; }
-      .btn { padding: 8px 12px; border-radius: 8px; border: 1px solid #444; background: #222; color: #fff; cursor: pointer; }
-      .btn[disabled] { opacity: 0.5; cursor: not-allowed; }
-      #status { min-height: 1.5em; color: #888; }
-      #cam { width: 320px; height: 240px; background: #000; }
-      #output { white-space: pre-wrap; border: 1px solid #333; padding: 12px; border-radius: 8px; min-height: 3.5em; }
-      input[type="password"] { width: 320px; padding: 8px; }
-    </style>
+    <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <main class="stack" aria-labelledby="title">
-      <h1 id="title">Scene Burst Describer</h1>
+    <h1>Scene Burst Describer</h1>
 
-      <section>
-        <label for="apiKey" class="label">AI Studio API key</label>
-        <div class="row">
-          <input id="apiKey" type="password" autocomplete="off" placeholder="AIza…" />
+    <div class="grid">
+      <!-- Left: Controls & camera -->
+      <section class="card">
+        <div class="kvs">
+          <div class="kv">
+            <label for="apiKey">AI Studio API key</label>
+            <input id="apiKey" type="password" autocomplete="off" placeholder="AIza…" />
+          </div>
+          <div class="kv">
+            <label for="detail">Detail level</label>
+            <select id="detail">
+              <option value="concise" selected>Concise (1–2 sentences)</option>
+              <option value="detailed">Detailed (artwork/scene)</option>
+            </select>
+          </div>
+          <div class="kv">
+            <label for="ttsMode">TTS engine</label>
+            <select id="ttsMode">
+              <option value="webspeech" selected>Browser (Web Speech)</option>
+              <option value="remote">Remote / server TTS</option>
+            </select>
+            <small class="hint">Remote expects POST /api/tts → { audioUrl }</small>
+          </div>
+          <div class="kv">
+            <label for="rate">TTS rate</label>
+            <input id="rate" type="range" min="0.8" max="1.4" step="0.1" value="1.0" />
+          </div>
+        </div>
+
+        <div class="row mt">
           <button id="start" class="btn">Start Burst</button>
           <button id="stop" class="btn" disabled>Stop</button>
+          <label class="row subtle ml-auto" style="gap:6px;">
+            <input id="narrate" type="checkbox" checked /> Narrate status (TTS)
+          </label>
         </div>
+
         <div id="status" role="status" aria-live="polite"></div>
+
+        <div class="row mt top">
+          <video id="cam" playsinline muted></video>
+          <div class="flex1">
+            <div class="panelTitle">Result</div>
+            <div id="output"></div>
+
+            <div class="panelTitle mt">TTS</div>
+            <div class="row">
+              <button id="pauseTTS" class="btn">Pause</button>
+              <button id="resumeTTS" class="btn">Resume</button>
+              <button id="clearTTS" class="btn">Clear Queue</button>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section class="row">
-        <video id="cam" playsinline muted></video>
-        <div style="flex:1; min-width: 240px;">
-          <div class="label">Result</div>
-          <div id="output"></div>
-        </div>
+      <!-- Right: Transcript -->
+      <section class="card">
+        <div class="panelTitle">Dialogue (click ▶ to replay any line)</div>
+        <ul id="transcript"></ul>
       </section>
-    </main>
+    </div>
 
     <script type="module" src="./app.js"></script>
   </body>
