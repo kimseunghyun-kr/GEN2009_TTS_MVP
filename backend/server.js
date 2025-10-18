@@ -1,7 +1,6 @@
-// backend/server.js
 // Tiny, stateless token minter for Gemini Live (BYO user key).
-// The client sends THEIR AI Studio API key once per session, we mint an ephemeral Live token
-// with safe constraints and return it. We NEVER store the user's key.
+// Client sends THEIR AI Studio API key; we mint a short-lived ephemeral token and return it.
+// We NEVER store keys.
 
 import express from 'express';
 import cors from 'cors';
@@ -11,42 +10,42 @@ import { GoogleGenAI } from '@google/genai';
 const app = express();
 const PORT = process.env.PORT || 8787;
 
-// Allow your dev front-end origin; set FRONTEND_ORIGIN in prod
-const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || 'http://localhost:5173';
-
 app.use(helmet());
-app.use(cors({ origin: FRONTEND_ORIGIN, credentials: false }));
+app.use(cors()); // dev: allow all
 app.use(express.json({ limit: '1mb' }));
 
 // Health
 app.get('/healthz', (_req, res) => res.json({ ok: true }));
 
-// POST /api/ephemeral  (also accepts GET with header)
-// Client must include x-gemini-api-key header OR JSON body { apiKey }
-app.all('/api/ephemeral', async (req, res) => {
+// POST /api/ephemeral
+// header: x-gemini-api-key: AIza...
+// body   (optional): { "apiKey": "AIza..." }
+app.post('/api/ephemeral', async (req, res) => {
   try {
     const userKey = req.headers['x-gemini-api-key'] || req.body?.apiKey;
     if (!userKey || typeof userKey !== 'string') {
       return res.status(400).json({ error: 'Missing x-gemini-api-key header or {apiKey} in JSON body' });
     }
 
-    // IMPORTANT: we DO NOT persist this. Instantiate SDK with the user key just for minting.
+    // create ephemeral token using the user's key (developer API)
     const ai = new GoogleGenAI({ apiKey: userKey, apiVersion: 'v1alpha' });
 
     const now = Date.now();
     const token = await ai.authTokens.create({
       config: {
         uses: 1,
-        newSessionExpireTime: new Date(now + 60_000).toISOString(),   // 1 min to start a Live session
-        expireTime: new Date(now + 30 * 60_000).toISOString(),        // ~30 min overall token lifetime
+        // ~1 min to open session; ~30 min lifetime
+        newSessionExpireTime: new Date(now + 60_000).toISOString(),
+        expireTime: new Date(now + 30 * 60_000).toISOString(),
         httpOptions: { apiVersion: 'v1alpha' },
-        // Lock down the Live session so clients can’t escalate
+        // Lock what the client can do
         liveConnectConstraints: {
           model: 'gemini-2.0-flash-live-001',
           config: {
-            responseModalities: ['TEXT'], // we use browser TTS; switch to 'AUDIO' if you want native voice
+            responseModalities: ['TEXT'], // we TTS in browser
             temperature: 0.6,
-            systemInstruction: 'You are an accessibility narrator. Describe scenes succinctly for a blind user with spatial context and safety cues first.'
+            systemInstruction:
+              'You are an accessibility narrator. Describe scenes succinctly for a blind user with spatial context and safety cues first.'
           }
         }
       }
@@ -59,4 +58,6 @@ app.all('/api/ephemeral', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => console.log(`Backend listening on http://localhost:${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Backend listening on http://localhost:${PORT}`);
+});

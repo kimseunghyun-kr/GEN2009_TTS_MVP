@@ -1,19 +1,57 @@
 :root { color-scheme: light dark; }
 * { box-sizing: border-box; }
 body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
-main.stack { display: grid; gap: 16px; max-width: 880px; margin: 0 auto; padding: 16px; }
-.panel { background: canvas; color: canvastext; border: 1px solid color-mix(in oklab, canvastext 20%, transparent); border-radius: 12px; padding: 16px; box-shadow: 0 2px 6px rgba(0,0,0,.06); }
+main.stack { display: grid; gap: 16px; max-width: 1000px; margin: 0 auto; padding: 16px; }
+
+.panel {
+  background: canvas; color: canvastext;
+  border: 1px solid color-mix(in oklab, canvastext 20%, transparent);
+  border-radius: 12px; padding: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.06);
+}
 .row { display: flex; gap: 12px; align-items: center; }
 .row.wrap { flex-wrap: wrap; }
 .label { font-weight: 700; }
 .help { opacity: .8; font-size: .95rem; margin-top: 4px; }
-#apiKey { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid color-mix(in oklab, canvastext 25%, transparent); }
+input[type="password"] { width: 100%; max-width: 520px; padding: 10px 12px; border-radius: 10px; border: 1px solid color-mix(in oklab, canvastext 25%, transparent); }
 .btn { padding: 10px 14px; border-radius: 10px; border: 1px solid color-mix(in oklab, canvastext 25%, transparent); background: color-mix(in oklab, canvas 95%, canvastext 5%); cursor: pointer; }
 .btn[disabled] { opacity: .5; cursor: not-allowed; }
 .btn.primary { background: color-mix(in oklab, canvastext 12%, canvas 88%); font-weight: 700; }
 .toggle { display: inline-flex; align-items: center; gap: 8px; }
 .toggle .sub { opacity: .8; font-size: .9rem; }
 .status { min-height: 1.5em; margin-top: 8px; font-family: ui-monospace, Menlo, Consolas, monospace; }
-video { width: 360px; height: 270px; background: #000; border-radius: 12px; }
-.transcript { margin-top: 12px; padding: 8px 10px; border-left: 4px solid color-mix(in oklab, canvastext 20%, transparent); background: color-mix(in oklab, canvas 96%, canvastext 4%); font-family: ui-monospace, Menlo, Consolas, monospace; white-space: pre-wrap; }
-.tts { display: grid; gap: 8px; align-content: start; }
+
+video { width: 380px; height: 285px; background: #000; border-radius: 12px; }
+
+.transcript {
+  margin-top: 12px; padding: 8px 10px;
+  border-left: 4px solid color-mix(in oklab, canvastext 20%, transparent);
+  background: color-mix(in oklab, canvas 96%, canvastext 4%);
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  white-space: pre-wrap;
+  height: 70vh;            /* big */
+  overflow: auto;          /* scroll */
+  resize: vertical;        /* user can drag */
+}
+
+/* Full transcript drawer */
+.drawer {
+  position: fixed; inset: 0; z-index: 9999;
+  background: color-mix(in oklab, black 60%, transparent);
+  display: none;
+}
+.drawer.open { display: block; }
+.drawer-inner {
+  position: absolute; right: 0; top: 0; bottom: 0; width: min(700px, 90vw);
+  background: canvas; color: canvastext;
+  border-left: 1px solid color-mix(in oklab, canvastext 20%, transparent);
+  padding: 12px; display: grid; grid-template-rows: auto 1fr; gap: 8px;
+}
+.drawer-toolbar { display: flex; gap: 8px; justify-content: flex-end; }
+.full-text {
+  background: color-mix(in oklab, canvas 96%, canvastext 4%);
+  border: 1px solid color-mix(in oklab, canvastext 15%, transparent);
+  border-radius: 10px; padding: 10px;
+  margin: 0; overflow: auto; height: 100%;
+  font-family: ui-monospace, Menlo, Consolas, monospace; white-space: pre-wrap;
+}

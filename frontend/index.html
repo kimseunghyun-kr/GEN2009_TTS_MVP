@@ -3,43 +3,41 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>A11y Narrator — BYO Gemini Key</title>
-    <link rel="stylesheet" href="./styles.css" />
+    <title>Scene Burst Describer (BYO Gemini Key)</title>
+    <style>
+      :root { color-scheme: dark light; }
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 24px; }
+      .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+      .stack { display: grid; gap: 16px; max-width: 720px; }
+      .label { font-weight: 600; }
+      .btn { padding: 8px 12px; border-radius: 8px; border: 1px solid #444; background: #222; color: #fff; cursor: pointer; }
+      .btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+      #status { min-height: 1.5em; color: #888; }
+      #cam { width: 320px; height: 240px; background: #000; }
+      #output { white-space: pre-wrap; border: 1px solid #333; padding: 12px; border-radius: 8px; min-height: 3.5em; }
+      input[type="password"] { width: 320px; padding: 8px; }
+    </style>
   </head>
   <body>
     <main class="stack" aria-labelledby="title">
-      <h1 id="title">Accessible Scene Describer (Bring Your Own Gemini Key)</h1>
+      <h1 id="title">Scene Burst Describer</h1>
 
-      <section class="panel">
-        <label for="apiKey" class="label">Your AI Studio API key</label>
-        <input id="apiKey" type="password" autocomplete="off" placeholder="AIza…" aria-describedby="keyHelp" />
-        <div id="keyHelp" class="help">Used only to mint a short‑lived Live token; never stored.</div>
-
+      <section>
+        <label for="apiKey" class="label">AI Studio API key</label>
         <div class="row">
-          <button id="start" class="btn primary" aria-pressed="false">Start describing</button>
+          <input id="apiKey" type="password" autocomplete="off" placeholder="AIza…" />
+          <button id="start" class="btn">Start Burst</button>
           <button id="stop" class="btn" disabled>Stop</button>
-          <label class="toggle">
-            <input type="checkbox" id="auto" checked /> Auto
-            <span class="sub">(request description every 3s)</span>
-          </label>
-          <label class="toggle">
-            <input type="checkbox" id="captions" checked /> Show transcript
-          </label>
         </div>
-
-        <div id="status" class="status" role="status" aria-live="polite"></div>
+        <div id="status" role="status" aria-live="polite"></div>
       </section>
 
-      <section class="panel">
-        <div class="row wrap">
-          <video id="cam" playsinline muted></video>
-          <div class="tts">
-            <label for="rate" class="label">Speech rate</label>
-            <input id="rate" type="range" min="0.7" max="1.4" step="0.1" value="1.0" />
-            <button id="repeat" class="btn">Repeat last</button>
-          </div>
+      <section class="row">
+        <video id="cam" playsinline muted></video>
+        <div style="flex:1; min-width: 240px;">
+          <div class="label">Result</div>
+          <div id="output"></div>
         </div>
-        <div id="transcript" class="transcript" aria-hidden="true"></div>
       </section>
     </main>
 
