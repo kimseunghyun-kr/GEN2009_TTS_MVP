@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>A11y Narrator — BYO Gemini Key</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="stack" aria-labelledby="title">
+      <h1 id="title">Accessible Scene Describer (Bring Your Own Gemini Key)</h1>
+
+      <section class="panel">
+        <label for="apiKey" class="label">Your AI Studio API key</label>
+        <input id="apiKey" type="password" autocomplete="off" placeholder="AIza…" aria-describedby="keyHelp" />
+        <div id="keyHelp" class="help">Used only to mint a short‑lived Live token; never stored.</div>
+
+        <div class="row">
+          <button id="start" class="btn primary" aria-pressed="false">Start describing</button>
+          <button id="stop" class="btn" disabled>Stop</button>
+          <label class="toggle">
+            <input type="checkbox" id="auto" checked /> Auto
+            <span class="sub">(request description every 3s)</span>
+          </label>
+          <label class="toggle">
+            <input type="checkbox" id="captions" checked /> Show transcript
+          </label>
+        </div>
+
+        <div id="status" class="status" role="status" aria-live="polite"></div>
+      </section>
+
+      <section class="panel">
+        <div class="row wrap">
+          <video id="cam" playsinline muted></video>
+          <div class="tts">
+            <label for="rate" class="label">Speech rate</label>
+            <input id="rate" type="range" min="0.7" max="1.4" step="0.1" value="1.0" />
+            <button id="repeat" class="btn">Repeat last</button>
+          </div>
+        </div>
+        <div id="transcript" class="transcript" aria-hidden="true"></div>
+      </section>
+    </main>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
